@@ -35,25 +35,37 @@ class ClientChat(slixmpp.ClientXMPP):
         self.register_plugin('xep_0066')
         self.FLAG_AUTH = False
         self.TERMINATE_USER = 0
-
+        print("Sesion iniciada con exitdso")
     async def session_start(self, event):
-        self.send_presence(pshow='chat', pstatus='Hello, I am a client')
+        print("Sesion iniciada con exitod")
+        self.send_presence()
         await self.get_roster()
         self.FLAG_AUTH = True
-        option = second_menu()
-        if option == 7:
-            self.TERMINATE_USER = 2
-            self.disconnect()
-        elif option == 8:
+        print("Sesion iniciada con exito")
+        while self.TERMINATE_USER != 1:
+            option = second_menu()
+            if option ==6:
+                print("Ingresa tu estado: Available , Busy, Away,  Not available, Offline")
+                estado = (input(">> "))
+                print("Ingresa tu mensaje: ")
+                mensaje = input(">> ")
+                self.send_presence(estado, mensaje)
+                await self.get_roster()
 
-            self.TERMINATE_USER = 1
+            if option == 7:
+                self.TERMINATE_USER = 2
+                self.disconnect()
+            elif option == 8:
 
-            self.disconnect()
+                self.TERMINATE_USER = 1
+
+                self.disconnect()
 
 
     def message(self, msg):
         if msg['type'] in ('chat', 'normal'):
             print(msg['body'])
+
 
 
 
