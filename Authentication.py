@@ -18,8 +18,6 @@ class RegisterChat(slixmpp.ClientXMPP):
     async def session_start(self, event):
         self.send_presence()
         await self.get_roster()
-        self.disconnect()
-
 
     async def registration_user(self, iq):
         event = self.Iq()
@@ -28,12 +26,14 @@ class RegisterChat(slixmpp.ClientXMPP):
         event['register']['password'] = self.password
         try:
             await event.send()
-            logging.info("User registered")
+            print("Usuario registrado con exito")
         except slixmpp.exceptions.IqError as e:
             logging.error("Could not register: %s", e.iq['error']['text'])
             self.disconnect()
         except slixmpp.exceptions.IqTimeout:
             logging.error("No response from server.")
+            self.disconnect()
+        finally:
             self.disconnect()
 
 
@@ -42,7 +42,6 @@ class DeleteUsersChat(slixmpp.ClientXMPP):
     def __init__(self, jid, password):
         slixmpp.ClientXMPP.__init__(self, jid, password)
         self.add_event_handler("session_start", self.session_start)
-        self.add_event_handler("register", self.delete_user)
         self.register_plugin('xep_0030')
         self.register_plugin('xep_0004')
         self.register_plugin('xep_0066')
@@ -61,10 +60,13 @@ class DeleteUsersChat(slixmpp.ClientXMPP):
         event['register']['remove'] = True
         try:
             await event.send()
-            logging.info("User deleted")
+            print("Usuario eliminado")
+
         except slixmpp.exceptions.IqError as e:
-            logging.error("Could not delete: %s" % e.iq['error']['text'])
+            print("Could not delete: %s" % e.iq['error']['text'])
             self.disconnect()
         except slixmpp.exceptions.IqTimeout:
-            logging.error("No response from server.")
+            print("No response from server.")
+            self.disconnect()
+        finally:
             self.disconnect()
