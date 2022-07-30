@@ -20,7 +20,9 @@ def second_menu():
     7. Eliminar cuenta
     8. Cerrar Sesion
     """)
-    return int(input("Enter your choice: "))
+
+
+    return input("Enter your choice: ")
 
 
 
@@ -35,21 +37,39 @@ class ClientChat(slixmpp.ClientXMPP):
         self.register_plugin('xep_0066')
         self.FLAG_AUTH = False
         self.TERMINATE_USER = 0
-        print("Sesion iniciada con exitdso")
+
     async def session_start(self, event):
-        print("Sesion iniciada con exitod")
         self.send_presence()
         await self.get_roster()
         self.FLAG_AUTH = True
-        print("Sesion iniciada con exito")
         while self.TERMINATE_USER != 1:
+            await self.get_roster()
             option = second_menu()
+            try:
+                option = int(option)
+            except ValueError:
+                print("Por favor, elige un numero")
+                continue
+            if option not in [1,2,3,4,5,6,7,8]:
+                print("No existe esa opcion")
+                await self.get_roster()
+            if option == 1:
+                await self.get_roster()
+                self.mostrar_usuarios()
+
+            if option ==2:
+                print("Ingrese usuario a agregar")
+                user = input()
+                user = user+"@alumchat.fun"
+                self.send_presence_subscription(user)
+                #await self.get_roster()
+                print("Usuario agregado")
             if option ==6:
                 print("Ingresa tu estado: Available , Busy, Away,  Not available, Offline")
                 estado = (input(">> "))
                 print("Ingresa tu mensaje: ")
                 mensaje = input(">> ")
-                self.send_presence(estado, mensaje)
+                self.send_presence(pshow=estado, pstatus=mensaje)
                 await self.get_roster()
 
             if option == 7:
@@ -60,6 +80,23 @@ class ClientChat(slixmpp.ClientXMPP):
                 self.TERMINATE_USER = 1
 
                 self.disconnect()
+
+    def mostrar_usuarios(self):
+        print("---------Lista de usuarios---------\n")
+        list_users = self.client_roster.groups()
+        for user in list_users:
+            for username in list_users[user]:
+                if username != self.jid:
+                    print("Usuario: " + username)
+                    get_presence = self.client_roster.presence(username)
+                    for res, pres in get_presence.items():
+                        print("Estado: " + pres['show'])
+                        print("Mensaje: " + pres['status'])
+                        print("\n")
+
+
+
+
 
 
     def message(self, msg):

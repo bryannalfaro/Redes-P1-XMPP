@@ -42,6 +42,7 @@ if __name__ == '__main__':
 
         if opcion == 1:
             jid = input("Ingresa tu username: ")
+            jid = jid+"@alumchat.fun"
             password = getpass("Ingresa tu contraseña: ")
             print("Intentando conectar...\n")
             client = ClientChat(jid, password)
@@ -84,6 +85,7 @@ if __name__ == '__main__':
 
         elif opcion == 2:
             jid = input("Ingresa el username que deseas : ")
+            jid = jid+"@alumchat.fun"
             password = getpass("Ingresa tu contraseña: ")
             print("Intentando registrar...\n")
             client = RegisterChat(jid, password)
