@@ -5,9 +5,6 @@ from slixmpp import Iq
 from Authentication import *
 
 import slixmpp
-#Test3
-#1234
-
 
 def second_menu():
     print("""
@@ -20,7 +17,6 @@ def second_menu():
     7. Eliminar cuenta
     8. Cerrar Sesion
     """)
-
 
     return input("Enter your choice: ")
 
@@ -56,13 +52,18 @@ class ClientChat(slixmpp.ClientXMPP):
             if option == 1:
                 await self.get_roster()
                 self.mostrar_usuarios()
+            if option == 4:
+                print("Ingresa el usuario a comunicar")
+                user = input()
+                user = user+"@alumchat.fun"
+                await self.comunicacion_1_1(user)
 
             if option ==2:
                 print("Ingrese usuario a agregar")
                 user = input()
                 user = user+"@alumchat.fun"
                 self.send_presence_subscription(user)
-                #await self.get_roster()
+                await self.get_roster()
                 print("Usuario agregado")
             if option ==6:
                 print("Ingresa tu estado: Available , Busy, Away,  Not available, Offline")
@@ -81,6 +82,18 @@ class ClientChat(slixmpp.ClientXMPP):
 
                 self.disconnect()
 
+    async def comunicacion_1_1(self,user):
+        close_chat = True
+        while close_chat:
+            print("e para salir\n")
+            mensaje = input(">> ")
+            if mensaje == "e":
+                close_chat = False
+            else:
+                self.send_message(mto=user, mbody=mensaje, mtype='chat')
+                await self.get_roster()
+
+
     def mostrar_usuarios(self):
         print("---------Lista de usuarios---------\n")
         list_users = self.client_roster.groups()
@@ -95,17 +108,9 @@ class ClientChat(slixmpp.ClientXMPP):
                         print("\n")
 
 
-
-
-
-
     def message(self, msg):
         if msg['type'] in ('chat', 'normal'):
             print(msg['body'])
-
-
-
-
 
 def third_menu():
     print("""
