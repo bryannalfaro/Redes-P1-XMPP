@@ -35,11 +35,15 @@ if __name__ == '__main__':
             print("1. Iniciar sesion")
             print("2. Registrar cuenta")
             print("3. Salir\n")
-            opcion = int(input(">> "))
+            opcion = input(">> ")
             print("_______________________________________________")
         else:
             opcion = register_choice
-
+        try:
+            opcion = int(opcion)
+        except ValueError:
+            print("Por favor, elige un numero")
+            continue
         if opcion == 1:
             jid = input("Ingresa tu username: ")
             jid = jid+"@alumchat.fun"

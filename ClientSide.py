@@ -1,9 +1,21 @@
+#Referencias
+#https://stackoverflow.com/questions/58454190/python-async-waiting-for-stdin-input-while-doing-other-stuff
+from time import sleep
 import logging
 from getpass import getpass
 from argparse import ArgumentParser
 from slixmpp import Iq
 from Authentication import *
+from threading import Thread
+from aioconsole import ainput
 
+'''
+TODO
+    -Aceptar chat mientras input es ingresado
+    -Notificaciones
+    -Enviar recibir archivos
+    -Grupos
+'''
 import slixmpp
 
 def second_menu():
@@ -20,8 +32,6 @@ def second_menu():
 
     return input("Enter your choice: ")
 
-
-
 class ClientChat(slixmpp.ClientXMPP):
     def __init__(self, jid, password):
         slixmpp.ClientXMPP.__init__(self, jid, password)
@@ -32,6 +42,7 @@ class ClientChat(slixmpp.ClientXMPP):
         self.register_plugin('xep_0004')
         self.register_plugin('xep_0066')
         self.FLAG_AUTH = False
+        self.received_message = False
         self.TERMINATE_USER = 0
 
     async def session_start(self, event):
@@ -51,7 +62,10 @@ class ClientChat(slixmpp.ClientXMPP):
                 await self.get_roster()
             if option == 1:
                 await self.get_roster()
-                self.mostrar_usuarios()
+                self.mostrar_usuarios(1)
+            if option == 3:
+                await self.get_roster()
+                self.mostrar_usuarios(2)
             if option == 4:
                 print("Ingresa el usuario a comunicar")
                 user = input()
@@ -85,8 +99,9 @@ class ClientChat(slixmpp.ClientXMPP):
     async def comunicacion_1_1(self,user):
         close_chat = True
         while close_chat:
+
             print("e para salir\n")
-            mensaje = input(">> ")
+            mensaje = await ainput(">> ")
             if mensaje == "e":
                 close_chat = False
             else:
@@ -94,23 +109,43 @@ class ClientChat(slixmpp.ClientXMPP):
                 await self.get_roster()
 
 
-    def mostrar_usuarios(self):
-        print("---------Lista de usuarios---------\n")
-        list_users = self.client_roster.groups()
-        for user in list_users:
-            for username in list_users[user]:
-                if username != self.jid:
-                    print("Usuario: " + username)
-                    get_presence = self.client_roster.presence(username)
-                    for res, pres in get_presence.items():
-                        print("Estado: " + pres['show'])
-                        print("Mensaje: " + pres['status'])
-                        print("\n")
+
+    def mostrar_usuarios(self,selection):
+        if selection == 1:
+            print("---------Lista de usuarios---------\n")
+            list_users = self.client_roster.groups()
+            for user in list_users:
+                for username in list_users[user]:
+                    if username != self.jid:
+                        print("Usuario: " + username)
+                        get_presence = self.client_roster.presence(username)
+                        for res, pres in get_presence.items():
+                            print("Estado: " + pres['show'])
+                            print("Mensaje: " + pres['status'])
+                            print("\n")
+        if selection == 2:
+            list_users = self.client_roster.groups()
+            print("---------Informacion de contacto---------\n")
+            print("Ingresa el usuario a consultar")
+            user = input()
+            user = user+"@alumchat.fun"
+            try:
+                for username in list_users:
+                    if user in list_users[username]:
+                        j = self.client_roster.presence(user)
+                for res, pres in j.items():
+                    print("Estado: " + pres['show'])
+                    print("Mensaje: " + pres['status'])
+                    print("\n")
+            except:
+                print("Usuario no encontrado")
 
 
-    def message(self, msg):
-        if msg['type'] in ('chat', 'normal'):
-            print(msg['body'])
+
+    def message(self,msg):
+
+        self.received_message = True
+        print(msg['from'],":",msg['body'])
 
 def third_menu():
     print("""
