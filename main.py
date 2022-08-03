@@ -23,7 +23,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     flag = True
 
-    #logging.basicConfig(level=args.loglevel,format='%(levelname)-8s %(message)s')
+    logging.basicConfig(level=args.loglevel,format='%(levelname)-8s %(message)s')
     #logging.basicConfig(level=logging.DEBUG,format='%(levelname)-8s %(message)s')
 
     register_choice = 0
@@ -44,6 +44,7 @@ if __name__ == '__main__':
         except ValueError:
             print("Por favor, elige un numero")
             continue
+
         if opcion == 1:
             jid = input("Ingresa tu username: ")
             jid = jid+"@alumchat.fun"
@@ -65,27 +66,6 @@ if __name__ == '__main__':
                 client.process(forever=False)
                 client.disconnect()
                 flag = False
-            '''if flag:
-                client_flag = True
-                print("Conectado con exito :)")
-                print("_______________________________________________")
-            else:
-                client_flag = False
-                print("Error de autenticacion :(")
-                print("_______________________________________________")
-            while client_flag:
-                option_client = second_menu()
-                if option_client == 7:
-                    print("Eliminar usuario")
-                    print(jid, password)
-                    client = DeleteUsersChat(jid, password)
-                    client.connect(disable_starttls=True)
-                    client.process(forever=False)
-                    client.disconnect()
-                    flag = False
-                    client_flag = False
-                elif option_client == 8:
-                    client_flag = False'''
 
         elif opcion == 2:
             jid = input("Ingresa el username que deseas : ")
@@ -98,17 +78,12 @@ if __name__ == '__main__':
             client.process(forever=False)
             print("Registrado con exito :)")
             flag = False
-            '''option_client = third_menu()
-
-            if option_client ==1:
-                register_choice = option_client
-            else:
-                register_choice = option_client+1'''
 
         elif opcion == 3:
             print("Gracias por usar el chat :)")
             print("_______________________________________________")
             exit()
+
         else:
             print("Opcion invalida")
             print("_______________________________________________")
