@@ -5,6 +5,12 @@ from slixmpp import Iq
 
 import slixmpp
 
+'''
+Class to manage the registration of a user
+ARGS:
+    jid: username to be registered
+    password: password of the user
+'''
 class RegisterChat(slixmpp.ClientXMPP):
     def __init__(self, jid, password):
         slixmpp.ClientXMPP.__init__(self, jid, password)
@@ -15,10 +21,20 @@ class RegisterChat(slixmpp.ClientXMPP):
         self.register_plugin('xep_0066')
         self.register_plugin('xep_0077')
 
+    '''
+    Function to handle the session start
+    ARGS:
+        event: event that is triggered when the session starts
+    '''
     async def session_start(self, event):
         self.send_presence()
         await self.get_roster()
 
+    '''
+    Function to register an user in an iq request
+    ARGS:
+        iq: iq request to register a user
+    '''
     async def registration_user(self, iq):
         event = self.Iq()
         event['type'] = 'set'
@@ -37,7 +53,9 @@ class RegisterChat(slixmpp.ClientXMPP):
             self.disconnect()
 
 
-
+'''
+Class to handle de deletion of an user
+'''
 class DeleteUsersChat(slixmpp.ClientXMPP):
     def __init__(self, jid, password):
         slixmpp.ClientXMPP.__init__(self, jid, password)

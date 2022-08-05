@@ -1,10 +1,12 @@
 
+import sys
 from ClientSide import *
 from Authentication import *
 
 import asyncio
 
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+if sys.platform == 'win32':
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 if __name__ == '__main__':
     parser = ArgumentParser(description=ClientChat.__doc__)
@@ -23,14 +25,25 @@ if __name__ == '__main__':
     args = parser.parse_args()
     flag = True
 
-    logging.basicConfig(level=args.loglevel,format='%(levelname)-8s %(message)s')
+    #logging.basicConfig(level=args.loglevel,format='%(levelname)-8s %(message)s')
     #logging.basicConfig(level=logging.DEBUG,format='%(levelname)-8s %(message)s')
 
     register_choice = 0
+    '''
+    Program running loop
+    '''
     while flag:
         if register_choice == 0:
+            print("""
+ ::::::::  :::    :::     ::: :::::::::::      :::    ::: :::     :::  ::::::::
+:+:    :+: :+:    :+:   :+: :+:   :+:          :+:    :+: :+:     :+: :+:    :+:
++:+        +:+    +:+  +:+   +:+  +:+          +:+    +:+ +:+     +:+ +:+
++#+        +#++:++#++ +#++:++#++: +#+          +#+    +:+ +#+     +:+ :#:
++#+        +#+    +#+ +#+     +#+ +#+          +#+    +#+  +#+   +#+  +#+   +#+#
+#+#    #+# #+#    #+# #+#     #+# #+#          #+#    #+#   #+#+#+#   #+#    #+#
+ ########  ###    ### ###     ### ###           ########      ###      ########
+            """)
             print("_______________________________________________")
-            print("Bienvenido al chat :)")
             print("Selecciona una opcion: ")
             print("1. Iniciar sesion")
             print("2. Registrar cuenta")
