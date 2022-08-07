@@ -9,7 +9,6 @@ TODO
     -Aceptar chat mientras input es ingresado
     -Notificaciones
     -Enviar recibir archivos
-    -Grupos
 '''
 import slixmpp
 
@@ -69,6 +68,8 @@ class ClientChat(slixmpp.ClientXMPP):
     async def session_start(self, event):
         self.send_presence()
         await self.get_roster()
+
+
         self.FLAG_AUTH = True
 
         while self.TERMINATE_USER != 1:
@@ -126,8 +127,11 @@ class ClientChat(slixmpp.ClientXMPP):
                     print("\nIngresa el jid del grupo: ")
                     self.group = await ainput()
                     self.group = self.group+"@conference.alumchat.fun"
+                    self.add_event_handler("muc::%s::got_online" % self.group, self.muc_online)
+                    self.add_event_handler("muc::%s::got_offline" % self.group, self.muc_offline)
                     print("Ingresa tu nickname: ")
                     self.nickname = await ainput()
+
                     self.plugin['xep_0045'].join_muc(self.group,self.nickname)
                     if self.groups_deleted != []:
                         if self.group in self.groups_deleted:
@@ -147,6 +151,7 @@ class ClientChat(slixmpp.ClientXMPP):
 
                         self.plugin['xep_0045'].leave_muc(self.group,user)
                         self.groups_deleted.append(self.group)
+                        self.validate_group_presence = False
                         await self.get_roster()
 
             if option ==6:
@@ -243,12 +248,9 @@ class ClientChat(slixmpp.ClientXMPP):
         selection: option to select display all list or details of a contact
     '''
     def mostrar_usuarios(self,selection):
-        print("1 ", self.client_roster)
-        print(self.roster)
         if selection == 1:
             print("---------Lista de usuarios---------\n")
             list_users = self.client_roster.groups()
-            print(list_users)
             for user in list_users:
                 print(user)
                 for username in list_users[user]:
@@ -279,6 +281,25 @@ class ClientChat(slixmpp.ClientXMPP):
                     print("\n")
             except:
                 print("Usuario no encontrado")
+
+    '''
+    Function to handle the connection in group chat
+    ARGS:
+        presence: presence stanza
+    '''
+    def muc_online(self, presence):
+        if presence['muc']['nick'] != self.nickname:
+            print(presence['muc']['nick'] + " esta conectado")
+
+
+    '''
+    Function to handle the disconnection in group chat
+    ARGS:
+        presence: presence stanza
+    '''
+    def muc_offline(self, presence):
+        if presence['muc']['nick'] != self.nickname:
+            print(presence['muc']['nick'] + " esta desconectado")
 
     '''
     Function to receive a message from a personal or group chat
