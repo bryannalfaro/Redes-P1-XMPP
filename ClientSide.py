@@ -2,13 +2,14 @@
 #https://stackoverflow.com/questions/58454190/python-async-waiting-for-stdin-input-while-doing-other-stuff
 
 from Authentication import *
-from aioconsole import ainput
+from aioconsole import ainput, aprint
 
 '''
 TODO
     -Aceptar chat mientras input es ingresado
     -Notificaciones
     -Enviar recibir archivos
+    - VCard de usuarios
 '''
 import slixmpp
 
@@ -44,6 +45,7 @@ class ClientChat(slixmpp.ClientXMPP):
         self.jid, password = jid, password
         self.add_event_handler("session_start", self.session_start)
         self.add_event_handler("message", self.message)
+
         self.register_plugin('xep_0030')
         self.register_plugin('xep_0065')
         self.register_plugin('xep_0004')
@@ -53,6 +55,15 @@ class ClientChat(slixmpp.ClientXMPP):
         self.register_plugin('xep_0363')
         self.register_plugin('xep_0059')
         self.register_plugin('xep_0045')
+        self.register_plugin('xep_0085')
+        self.register_plugin('xep_0054')
+        self.add_event_handler('chatstate_active', self.chat_state_active)
+        self.add_event_handler('changed_status', self.chat_changed)
+        self.add_event_handler('chatstate_gone', self.chat_state_gone)
+        self.add_event_handler('chatstate_composing', self.chat_composing)
+        self.add_event_handler('chatstate_paused', self.chat_paused)
+
+        self.user_chat = None
         self.FLAG_AUTH = False
         self.received_message = False
         self.TERMINATE_USER = 0
@@ -68,7 +79,6 @@ class ClientChat(slixmpp.ClientXMPP):
     async def session_start(self, event):
         self.send_presence()
         await self.get_roster()
-
 
         self.FLAG_AUTH = True
 
@@ -86,7 +96,7 @@ class ClientChat(slixmpp.ClientXMPP):
 
             if option == 1:
                 await self.get_roster()
-                self.mostrar_usuarios(1)
+                await self.mostrar_usuarios(1)
 
             if option ==2:
                 print("Ingrese usuario a agregar")
@@ -98,12 +108,13 @@ class ClientChat(slixmpp.ClientXMPP):
 
             if option == 3:
                 await self.get_roster()
-                self.mostrar_usuarios(2)
+                await self.mostrar_usuarios(2)
 
             if option == 4:
                 print("Ingresa el usuario a comunicar")
                 user = input()
                 user = user+"@alumchat.fun"
+                self.user_chat = user
                 await self.comunicacion_1_1(user,'personal_chat')
 
             if option == 5:
@@ -169,6 +180,7 @@ class ClientChat(slixmpp.ClientXMPP):
                 self.TERMINATE_USER = 1
                 self.disconnect()
 
+
     '''
     Function to manage the 1 to 1 comunnication and group chat comunnication
     ARGS:
@@ -177,12 +189,29 @@ class ClientChat(slixmpp.ClientXMPP):
 
     '''
     async def comunicacion_1_1(self,user,type):
+
         close_chat = True
         while close_chat:
+
             if type == 'personal_chat':
                 print("e para salir\n")
+                m = self.Message()
+                m['to'] = user
+                m['type'] = 'chat'
+                m['chat_state'] = 'composing'
+                m.send()
                 mensaje = await ainput(">> ")
+                m = self.Message()
+                m['to'] = user
+                m['type'] = 'chat'
+                m['chat_state'] = 'paused'
+                m.send()
                 if mensaje == "e":
+                    m = self.Message()
+                    m['to'] = user
+                    m['type'] = 'chat'
+                    m['chat_state'] = 'gone'
+                    m.send()
                     close_chat = False
                 elif mensaje=="file":
                     print("Ingresa el nombre del archivo")
@@ -198,7 +227,13 @@ class ClientChat(slixmpp.ClientXMPP):
                     m.send()
                     await self.get_roster()
                 else:
+
                     self.send_message(mto=user, mbody=mensaje, mtype='chat')
+                    m = self.Message()
+                    m['to'] = user
+                    m['type'] = 'chat'
+                    m['chat_state'] = 'active'
+                    m.send()
                     await self.get_roster()
             if type == 'group_chat':
                 print("e para salir\n")
@@ -220,6 +255,7 @@ class ClientChat(slixmpp.ClientXMPP):
                     await self.get_roster()
                 else:
                     self.send_message(mto=user, mbody=mensaje, mtype='groupchat')
+
                     await self.get_roster()
     '''
     Function to show the groups of the user in the chat session
@@ -247,7 +283,7 @@ class ClientChat(slixmpp.ClientXMPP):
     ARGS:
         selection: option to select display all list or details of a contact
     '''
-    def mostrar_usuarios(self,selection):
+    async def mostrar_usuarios(self,selection):
         if selection == 1:
             print("---------Lista de usuarios---------\n")
             list_users = self.client_roster.groups()
@@ -267,10 +303,13 @@ class ClientChat(slixmpp.ClientXMPP):
 
         if selection == 2:
             list_users = self.client_roster.groups()
+
             print("---------Informacion de contacto---------\n")
             print("Ingresa el usuario a consultar")
             user = input()
             user = user+"@alumchat.fun"
+            #vcard = await self.plugin['xep_0054'].get_vcard(user)
+            #print(vcard)
             try:
                 for username in list_users:
                     if user in list_users[username]:
@@ -320,3 +359,23 @@ class ClientChat(slixmpp.ClientXMPP):
                     print("*************Mensaje en grupo: ", msg["from"].bare.split("@")[0],"********************")
                     print(msg['mucnick'],":",msg['body'])
                     print("*******************************************************************\n")
+
+    def chat_composing(self,msg):
+        if self.user_chat != None:
+            print("Composing...")
+
+    def chat_state_gone(self,msg):
+        if self.user_chat != None:
+            print(msg["from"].bare.split("@")[0],": salio del chat")
+
+    def chat_paused(self,msg):
+        if self.user_chat != None:
+            print("Paused...")
+
+
+    def chat_changed(self,event):
+        print(event["from"].bare.split("@")[0],": cambio de estado\n")
+
+    def chat_state_active(self,msg):
+        if self.user_chat != None:
+            print("Esta activo en el chat")
