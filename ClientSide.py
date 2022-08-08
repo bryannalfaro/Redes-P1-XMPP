@@ -360,22 +360,46 @@ class ClientChat(slixmpp.ClientXMPP):
                     print(msg['mucnick'],":",msg['body'])
                     print("*******************************************************************\n")
 
+    '''
+    Function to handle the composition of a message
+    ARGS:
+        msg: xml with the message
+    '''
     def chat_composing(self,msg):
         if self.user_chat != None:
             print("Composing...")
 
+    '''
+    Function to handle the gone state of a chat
+    ARGS:
+        msg: xml with the message
+    '''
     def chat_state_gone(self,msg):
         if self.user_chat != None:
             print(msg["from"].bare.split("@")[0],": salio del chat")
 
+    '''
+    Function to handle the paused state of a chat
+    ARGS:
+        msg: xml with the message
+    '''
     def chat_paused(self,msg):
         if self.user_chat != None:
             print("Paused...")
 
-
+    '''
+    Function to handle a change in an user's status
+    ARGS:
+        event: xml with the event
+    '''
     def chat_changed(self,event):
         print(event["from"].bare.split("@")[0],": cambio de estado\n")
 
+    '''
+    Function to handle the active presence in a chat
+    ARGS:
+        msg: xml with the message
+    '''
     def chat_state_active(self,msg):
         if self.user_chat != None:
             print("Esta activo en el chat")
