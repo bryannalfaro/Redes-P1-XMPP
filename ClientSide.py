@@ -1,6 +1,6 @@
 #Referencias
 #https://stackoverflow.com/questions/58454190/python-async-waiting-for-stdin-input-while-doing-other-stuff
-
+#https://stackoverflow.com/questions/8023306/get-key-by-value-in-dictionary
 from Authentication import *
 from aioconsole import ainput
 
@@ -8,9 +8,10 @@ from aioconsole import ainput
 TODO
     -Enviar recibir archivos
     -Notificaciones en grupo
-    -Mejorar prints para cuando no hay usuarios
 '''
 import slixmpp
+
+status_user={'Available':'available','Away':'away','Busy':'dnd','Not Available':'xa'}
 
 '''
 Function to display a menu when the user is logged in the chat
@@ -99,7 +100,7 @@ class ClientChat(slixmpp.ClientXMPP):
 
             if option ==2: #Agregar usuario a contactos
                 print("Ingrese usuario a agregar (no es necesario agregar @alumchat.fun)")
-                user = input()
+                user = await ainput()
                 user = user+"@alumchat.fun"
                 self.send_presence_subscription(user)
                 await self.get_roster()
@@ -111,7 +112,7 @@ class ClientChat(slixmpp.ClientXMPP):
 
             if option == 4: #Comunicacion 1 a 1
                 print("Ingresa el usuario a comunicar (no es necesario agregar @alumchat.fun)")
-                user = input()
+                user = await ainput()
                 user = user+"@alumchat.fun"
                 self.user_chat = user
                 await self.comunicacion_1_1(user,'personal_chat')
@@ -119,7 +120,7 @@ class ClientChat(slixmpp.ClientXMPP):
             if option == 5: #Grupos
                 print("1. Entrar a un grupo")
                 print("2. Salir de un grupo")
-                menu_group = input()
+                menu_group = await ainput()
                 try:
                     menu_group = int(menu_group)
                 except ValueError:
@@ -165,9 +166,16 @@ class ClientChat(slixmpp.ClientXMPP):
                         await self.get_roster()
 
             if option ==6: #Enviar presencia
+                print("Ingresa tu status (Available, Away, Not Available , Busy): ")
+                status = await ainput()
+                if status not in status_user.keys():
+                    print("No existe ese status")
+                    continue
+                else:
+                    status = status_user.get(status)
                 print("Ingresa tu mensaje: ")
-                mensaje = input(">> ")
-                self.send_presence(pshow='Available', pstatus=mensaje)
+                mensaje = await ainput(">> ")
+                self.send_presence(pshow=status, pstatus=mensaje)
                 await self.get_roster()
 
             if option == 7:
@@ -291,11 +299,11 @@ class ClientChat(slixmpp.ClientXMPP):
                     self.validate_group_presence= True
                     if username != self.jid:
                         print("Grupo: " + username)
-                        get_presence = self.client_roster.presence(username)
+                        '''get_presence = self.client_roster.presence(username)
                         for res, pres in get_presence.items():
                             print("Estado: " + pres['show'])
                             print("Mensaje: " + pres['status'])
-                            print("\n")
+                            print("\n")'''
 
     '''
     Function to show the contact list of the user including individual contacts and groups
@@ -308,18 +316,34 @@ class ClientChat(slixmpp.ClientXMPP):
             print("---------Lista de usuarios---------\n")
             list_users = self.client_roster.groups()
             for user in list_users:
-                print(user)
                 for username in list_users[user]:
                     if str(username).find("@conference.alumchat.fun")!=-1:
                         self.show_my_groups()
+                        if self.validate_group_presence == False:
+                            print('No tienes grupos')
+
                     else:
                         if username != self.jid:
                             print("Usuario: " + username)
                             get_presence = self.client_roster.presence(username)
-                            for res, pres in get_presence.items():
-                                print("Estado: " + pres['show'])
-                                print("Mensaje: " + pres['status'])
-                                print("\n")
+                            if len(get_presence)==0:
+                                print("Estado: offline")
+                            else:
+                                for res, pres in get_presence.items():
+                                    if pres['show'] == ''and pres['status'] == '':
+                                        print("Estado: Available")
+                                        print("Mensaje: No hay mensaje de presencia")
+                                    elif pres['show'] == '':
+                                        print("Estado: Available")
+                                        print("Mensaje: " + pres['status'])
+                                    elif pres['status'] == '':
+
+                                        print("Estado: " + list(status_user.keys())[list(status_user.values()).index(pres['show'])])
+                                        print("Mensaje: No hay mensaje de presencia")
+                                    else:
+                                        print("Estado: " + list(status_user.keys())[list(status_user.values()).index(pres['show'])])
+                                        print("Mensaje: " + pres['status'])
+                                    print("\n")
 
         if selection == 2:
             list_users = self.client_roster.groups()
@@ -333,11 +357,28 @@ class ClientChat(slixmpp.ClientXMPP):
             try:
                 for username in list_users:
                     if user in list_users[username]:
-                        j = self.client_roster.presence(user)
-                for res, pres in j.items():
-                    print("Estado: " + pres['show'])
-                    print("Mensaje: " + pres['status'])
-                    print("\n")
+                        print("Usuario: " + user)
+                        get_presence = self.client_roster.presence(user)
+                        if len(get_presence)==0:
+                                        print("Estado: offline")
+                        else:
+                            for res, pres in get_presence.items():
+                                if pres['show'] == ''and pres['status'] == '':
+                                    print("Estado: Available")
+                                    print("Mensaje: No hay mensaje de presencia")
+                                elif pres['show'] == '':
+                                    print("Estado: Available")
+                                    print("Mensaje: " + pres['status'])
+                                elif pres['status'] == '':
+
+                                    print("Estado: " + list(status_user.keys())[list(status_user.values()).index(pres['show'])])
+                                    print("Mensaje: No hay mensaje de presencia")
+                                else:
+                                    print("Estado: " + list(status_user.keys())[list(status_user.values()).index(pres['show'])])
+                                    print("Mensaje: " + pres['status'])
+                                print("\n")
+                    else:
+                        print("Usuario no encontrado")
             except:
                 print("Usuario no encontrado")
 
