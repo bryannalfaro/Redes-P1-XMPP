@@ -95,7 +95,7 @@ For run the project you need to have Python 3 in your PC and a XMPP server to ma
 - [x] Chat 1 to 1 with a contact
 - [x] Participate in group chats
 - [x] Define presence message
-- [x] Send/Receive notifications (You have to be inside a 1 to 1 chat to see them)
+- [x] Send/Receive notifications (You have to be inside a 1 to 1 chat to see 'composing', 'paused', etc)
 - [ ] Send/Receive files
 
 

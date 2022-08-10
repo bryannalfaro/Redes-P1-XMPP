@@ -7,7 +7,6 @@ from aioconsole import ainput
 '''
 TODO
     -Enviar recibir archivos
-    -Notificaciones en grupo
 '''
 import slixmpp
 
