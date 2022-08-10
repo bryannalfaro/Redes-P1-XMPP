@@ -244,23 +244,15 @@ class ClientChat(slixmpp.ClientXMPP):
                     await self.get_roster()
             if type == 'group_chat':
                 print("e para salir\n")
-                m = self.Message()
-                m['to'] = user
-                m['type'] = 'chat'
-                m['chat_state'] = 'composing'
-                m.send()
+
                 mensaje = await ainput(">> ")
                 m = self.Message()
                 m['to'] = user
-                m['type'] = 'chat'
+                m['type'] = 'groupchat'
                 m['chat_state'] = 'paused'
                 m.send()
                 if mensaje == "e":
-                    m = self.Message()
-                    m['to'] = user
-                    m['type'] = 'chat'
-                    m['chat_state'] = 'gone'
-                    m.send()
+
                     close_chat = False
                 elif mensaje=="file":
                     print("Ingresa el nombre del archivo")
@@ -277,11 +269,7 @@ class ClientChat(slixmpp.ClientXMPP):
                     await self.get_roster()
                 else:
                     self.send_message(mto=user, mbody=mensaje, mtype='groupchat')
-                    m = self.Message()
-                    m['to'] = user
-                    m['type'] = 'chat'
-                    m['chat_state'] = 'active'
-                    m.send()
+
                     await self.get_roster()
 
                     await self.get_roster()
@@ -389,7 +377,7 @@ class ClientChat(slixmpp.ClientXMPP):
     '''
     def muc_online(self, presence):
         if presence['muc']['nick'] != self.nickname:
-            print(presence['muc']['nick'] + " esta conectado")
+            print(presence['muc']['nick'] + " esta conectado al grupo")
 
 
     '''
@@ -399,7 +387,7 @@ class ClientChat(slixmpp.ClientXMPP):
     '''
     def muc_offline(self, presence):
         if presence['muc']['nick'] != self.nickname:
-            print(presence['muc']['nick'] + " esta desconectado")
+            print(presence['muc']['nick'] + " esta desconectado del grupo")
 
     '''
     Function to receive a message from a personal or group chat
