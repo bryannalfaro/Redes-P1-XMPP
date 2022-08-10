@@ -59,7 +59,7 @@ if __name__ == '__main__':
             continue
 
         if opcion == 1:
-            jid = input("Ingresa tu username: ")
+            jid = input("Ingresa tu username (no es necesario agregar @alumchat.fun): ")
             jid = jid+"@alumchat.fun"
             password = getpass("Ingresa tu contraseña: ")
             print("Intentando conectar...\n")
@@ -81,7 +81,7 @@ if __name__ == '__main__':
                 flag = False
 
         elif opcion == 2:
-            jid = input("Ingresa el username que deseas : ")
+            jid = input("Ingresa el username que deseas (no es necesario agregar @alumchat.fun): ")
             jid = jid+"@alumchat.fun"
             password = getpass("Ingresa tu contraseña: ")
             print("Intentando registrar...\n")

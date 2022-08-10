@@ -31,8 +31,8 @@ This project is an chat application using the XMPP protocol for the communicatio
 
 ### Goals
 
-1. Getting closer to standars of a protocol 
-2. Understand the basics of asynchronous programming to develop in a network environment. 
+1. Getting closer to standars of a protocol
+2. Understand the basics of asynchronous programming to develop in a network environment.
 
 ### Built With
 
@@ -95,7 +95,7 @@ For run the project you need to have Python 3 in your PC and a XMPP server to ma
 - [x] Chat 1 to 1 with a contact
 - [x] Participate in group chats
 - [x] Define presence message
-- [ ] Send/Receive notifications
+- [x] Send/Receive notifications (You have to be inside a 1 to 1 chat to see them)
 - [ ] Send/Receive files
 
 
@@ -122,4 +122,4 @@ Project Link: [https://github.com/bryannalfaro/Redes-P1-XMPP](https://github.com
 
 [Python.com]: https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue
 [Python-url]: https://www.python.org/
- 
+

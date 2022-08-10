@@ -2,14 +2,13 @@
 #https://stackoverflow.com/questions/58454190/python-async-waiting-for-stdin-input-while-doing-other-stuff
 
 from Authentication import *
-from aioconsole import ainput, aprint
+from aioconsole import ainput
 
 '''
 TODO
-    -Aceptar chat mientras input es ingresado
-    -Notificaciones
     -Enviar recibir archivos
-    - VCard de usuarios
+    -Notificaciones en grupo
+    -Mejorar prints para cuando no hay usuarios
 '''
 import slixmpp
 
@@ -94,30 +93,30 @@ class ClientChat(slixmpp.ClientXMPP):
                 print("No existe esa opcion")
                 await self.get_roster()
 
-            if option == 1:
+            if option == 1: #Mostrar usuarios
                 await self.get_roster()
                 await self.mostrar_usuarios(1)
 
-            if option ==2:
-                print("Ingrese usuario a agregar")
+            if option ==2: #Agregar usuario a contactos
+                print("Ingrese usuario a agregar (no es necesario agregar @alumchat.fun)")
                 user = input()
                 user = user+"@alumchat.fun"
                 self.send_presence_subscription(user)
                 await self.get_roster()
                 print("Usuario agregado")
 
-            if option == 3:
+            if option == 3: #Mostrar detalles de un contacto
                 await self.get_roster()
                 await self.mostrar_usuarios(2)
 
-            if option == 4:
-                print("Ingresa el usuario a comunicar")
+            if option == 4: #Comunicacion 1 a 1
+                print("Ingresa el usuario a comunicar (no es necesario agregar @alumchat.fun)")
                 user = input()
                 user = user+"@alumchat.fun"
                 self.user_chat = user
                 await self.comunicacion_1_1(user,'personal_chat')
 
-            if option == 5:
+            if option == 5: #Grupos
                 print("1. Entrar a un grupo")
                 print("2. Salir de un grupo")
                 menu_group = input()
@@ -135,7 +134,7 @@ class ClientChat(slixmpp.ClientXMPP):
                     for room in result['disco_items']:
                         print ("Found room: %s, jid is %s" % (room['name'], room['jid']))
 
-                    print("\nIngresa el jid del grupo: ")
+                    print("\nIngresa el jid del grupo  (no es necesario agregar @conference.alumchat.fun): ")
                     self.group = await ainput()
                     self.group = self.group+"@conference.alumchat.fun"
                     self.add_event_handler("muc::%s::got_online" % self.group, self.muc_online)
@@ -155,7 +154,7 @@ class ClientChat(slixmpp.ClientXMPP):
                     if self.validate_group_presence == False:
                         print("No tienes grupos")
                     else:
-                        print("Ingresa el jid del grupo: ")
+                        print("Ingresa el jid del grupo: (no es necesario agregar @conference.alumchat.fun)")
                         self.group = await ainput()
                         self.group = self.group+"@conference.alumchat.fun"
                         user = self.jid +"@alumchat.fun"
@@ -165,7 +164,7 @@ class ClientChat(slixmpp.ClientXMPP):
                         self.validate_group_presence = False
                         await self.get_roster()
 
-            if option ==6:
+            if option ==6: #Enviar presencia
                 print("Ingresa tu mensaje: ")
                 mensaje = input(">> ")
                 self.send_presence(pshow='Available', pstatus=mensaje)
@@ -237,8 +236,23 @@ class ClientChat(slixmpp.ClientXMPP):
                     await self.get_roster()
             if type == 'group_chat':
                 print("e para salir\n")
+                m = self.Message()
+                m['to'] = user
+                m['type'] = 'chat'
+                m['chat_state'] = 'composing'
+                m.send()
                 mensaje = await ainput(">> ")
+                m = self.Message()
+                m['to'] = user
+                m['type'] = 'chat'
+                m['chat_state'] = 'paused'
+                m.send()
                 if mensaje == "e":
+                    m = self.Message()
+                    m['to'] = user
+                    m['type'] = 'chat'
+                    m['chat_state'] = 'gone'
+                    m.send()
                     close_chat = False
                 elif mensaje=="file":
                     print("Ingresa el nombre del archivo")
@@ -255,6 +269,12 @@ class ClientChat(slixmpp.ClientXMPP):
                     await self.get_roster()
                 else:
                     self.send_message(mto=user, mbody=mensaje, mtype='groupchat')
+                    m = self.Message()
+                    m['to'] = user
+                    m['type'] = 'chat'
+                    m['chat_state'] = 'active'
+                    m.send()
+                    await self.get_roster()
 
                     await self.get_roster()
     '''
@@ -305,10 +325,10 @@ class ClientChat(slixmpp.ClientXMPP):
             list_users = self.client_roster.groups()
 
             print("---------Informacion de contacto---------\n")
-            print("Ingresa el usuario a consultar")
+            print("Ingresa el usuario a consultar (no es necesario agregar @alumchat.fun)")
             user = input()
             user = user+"@alumchat.fun"
-            #vcard = await self.plugin['xep_0054'].get_vcard(user)
+            #vcard = await self.plugin['xep_0054'].get_vcard(jid = user)
             #print(vcard)
             try:
                 for username in list_users:
@@ -368,6 +388,8 @@ class ClientChat(slixmpp.ClientXMPP):
     def chat_composing(self,msg):
         if self.user_chat != None:
             print("Composing...")
+        if self.self.group != None:
+            print("Composing...")
 
     '''
     Function to handle the gone state of a chat
@@ -385,6 +407,8 @@ class ClientChat(slixmpp.ClientXMPP):
     '''
     def chat_paused(self,msg):
         if self.user_chat != None:
+            print("Paused...")
+        if self.self.group != None:
             print("Paused...")
 
     '''
