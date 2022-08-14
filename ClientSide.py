@@ -77,6 +77,7 @@ class ClientChat(slixmpp.ClientXMPP):
         self.TERMINATE_USER = 0
         self.groups_deleted = []
         self.validate_group_presence = False
+        self.group = None
 
     '''
     Function to manage the session
@@ -420,7 +421,7 @@ class ClientChat(slixmpp.ClientXMPP):
     def chat_composing(self,msg):
         if self.user_chat != None:
             print("Composing...")
-        if self.self.group != None:
+        if self.group != None:
             print("Composing...")
 
     '''
@@ -440,7 +441,7 @@ class ClientChat(slixmpp.ClientXMPP):
     def chat_paused(self,msg):
         if self.user_chat != None:
             print("Paused...")
-        if self.self.group != None:
+        if self.group != None:
             print("Paused...")
 
     '''
