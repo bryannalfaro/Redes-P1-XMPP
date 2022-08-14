@@ -27,10 +27,10 @@ class RegisterChat(slixmpp.ClientXMPP):
         slixmpp.ClientXMPP.__init__(self, jid, password)
         self.add_event_handler("session_start", self.session_start)
         self.add_event_handler("register", self.registration_user)
-        self.register_plugin('xep_0030')
-        self.register_plugin('xep_0004')
-        self.register_plugin('xep_0066')
-        self.register_plugin('xep_0077')
+        self.register_plugin('xep_0030') # Service Discovery
+        self.register_plugin('xep_0004') # Data Forms
+        self.register_plugin('xep_0066') # Out-of-band Data
+        self.register_plugin('xep_0077') # In-band Registration
 
     '''
     Function to handle the session start
@@ -71,10 +71,10 @@ class DeleteUsersChat(slixmpp.ClientXMPP):
     def __init__(self, jid, password):
         slixmpp.ClientXMPP.__init__(self, jid, password)
         self.add_event_handler("session_start", self.session_start)
-        self.register_plugin('xep_0030')
-        self.register_plugin('xep_0004')
-        self.register_plugin('xep_0066')
-        self.register_plugin('xep_0077')
+        self.register_plugin('xep_0030') # Service Discovery
+        self.register_plugin('xep_0004') # Data Forms
+        self.register_plugin('xep_0066') # Out-of-band Data
+        self.register_plugin('xep_0077') # In-band Registration
 
     async def session_start(self, event):
         self.send_presence()

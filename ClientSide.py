@@ -54,17 +54,17 @@ class ClientChat(slixmpp.ClientXMPP):
         self.add_event_handler("session_start", self.session_start)
         self.add_event_handler("message", self.message)
 
-        self.register_plugin('xep_0030')
-        self.register_plugin('xep_0065')
-        self.register_plugin('xep_0004')
-        self.register_plugin('xep_0066')
-        self.register_plugin('xep_0231')
-        self.register_plugin('xep_0071')
-        self.register_plugin('xep_0363')
-        self.register_plugin('xep_0059')
-        self.register_plugin('xep_0045')
-        self.register_plugin('xep_0085')
-        self.register_plugin('xep_0054')
+        self.register_plugin('xep_0030') #Service Discovery
+        self.register_plugin('xep_0065') #SOCKS5 Bytestreams
+        self.register_plugin('xep_0004') #Data Forms
+        self.register_plugin('xep_0066') #Out of Band Data
+        self.register_plugin('xep_0231') #XEP-0231: OOB Data
+        self.register_plugin('xep_0071') #XEP-0071: XHTML-IM
+        self.register_plugin('xep_0363') #XEP-0363: HTTP File Upload
+        self.register_plugin('xep_0059') #XEP-0059: Result Set Management
+        self.register_plugin('xep_0045') #XEP-0045: Multi-User Chat
+        self.register_plugin('xep_0085') #XEP-0085: Chat State Notifications
+        self.register_plugin('xep_0054') #XEP-0054: vcard-temp
         self.add_event_handler('chatstate_active', self.chat_state_active)
         self.add_event_handler('changed_status', self.chat_changed)
         self.add_event_handler('chatstate_gone', self.chat_state_gone)
@@ -141,7 +141,7 @@ class ClientChat(slixmpp.ClientXMPP):
                 if menu_group == 1: #Join a room
                     result = await self['xep_0030'].get_items(jid='conference.alumchat.fun')
                     for room in result['disco_items']:
-                        print ("Found room: %s, jid is %s" % (room['name'], room['jid']))
+                        print ("Room encontrado: ",room['name']," El jid es: ", room['jid'])
 
                     print("\nIngresa el jid del grupo  (no es necesario agregar @conference.alumchat.fun): ")
                     self.group = await ainput()
