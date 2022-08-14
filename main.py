@@ -1,4 +1,9 @@
-
+'''
+Universidad del Valle de Guatemala
+Redes
+Bryann Alfaro 19372
+Proyecto 1 - Chat with XMPP protocol
+'''
 import sys
 from ClientSide import *
 from Authentication import *
@@ -25,7 +30,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     flag = True
 
-    #logging.basicConfig(level=args.loglevel,format='%(levelname)-8s %(message)s')
+    logging.basicConfig(level=args.loglevel,format='%(levelname)-8s %(message)s')
     #logging.basicConfig(level=logging.DEBUG,format='%(levelname)-8s %(message)s')
 
     register_choice = 0

@@ -1,3 +1,14 @@
+'''
+Universidad del Valle de Guatemala
+Redes
+Bryann Alfaro 19372
+Proyecto 1 - Chat with XMPP protocol
+'''
+
+#References of use of library
+#https://github.com/poezio/slixmpp/tree/master/examples
+#https://slixmpp.readthedocs.io/en/latest/
+
 import logging
 from getpass import getpass
 from argparse import ArgumentParser

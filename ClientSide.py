@@ -1,6 +1,15 @@
-#Referencias
+'''
+Universidad del Valle de Guatemala
+Redes
+Bryann Alfaro 19372
+Proyecto 1 - Chat with XMPP protocol
+'''
+
+#References
 #https://stackoverflow.com/questions/58454190/python-async-waiting-for-stdin-input-while-doing-other-stuff
 #https://stackoverflow.com/questions/8023306/get-key-by-value-in-dictionary
+#https://github.com/poezio/slixmpp/tree/master/examples
+
 from Authentication import *
 from aioconsole import ainput
 
@@ -93,11 +102,11 @@ class ClientChat(slixmpp.ClientXMPP):
                 print("No existe esa opcion")
                 await self.get_roster()
 
-            if option == 1: #Mostrar usuarios
+            if option == 1: #Show users
                 await self.get_roster()
                 await self.mostrar_usuarios(1)
 
-            if option ==2: #Agregar usuario a contactos
+            if option ==2: #Add users to roster
                 print("Ingrese usuario a agregar (no es necesario agregar @alumchat.fun)")
                 user = await ainput()
                 user = user+"@alumchat.fun"
@@ -105,18 +114,18 @@ class ClientChat(slixmpp.ClientXMPP):
                 await self.get_roster()
                 print("Usuario agregado")
 
-            if option == 3: #Mostrar detalles de un contacto
+            if option == 3: #Show details of a contact
                 await self.get_roster()
                 await self.mostrar_usuarios(2)
 
-            if option == 4: #Comunicacion 1 a 1
+            if option == 4: #Chat 1 to 1
                 print("Ingresa el usuario a comunicar (no es necesario agregar @alumchat.fun)")
                 user = await ainput()
                 user = user+"@alumchat.fun"
                 self.user_chat = user
                 await self.comunicacion_1_1(user,'personal_chat')
 
-            if option == 5: #Grupos
+            if option == 5: #Groups
                 print("1. Entrar a un grupo")
                 print("2. Salir de un grupo")
                 menu_group = await ainput()
@@ -129,7 +138,7 @@ class ClientChat(slixmpp.ClientXMPP):
                     print("No existe esa opcion")
                     await self.get_roster()
 
-                if menu_group == 1:
+                if menu_group == 1: #Join a room
                     result = await self['xep_0030'].get_items(jid='conference.alumchat.fun')
                     for room in result['disco_items']:
                         print ("Found room: %s, jid is %s" % (room['name'], room['jid']))
@@ -149,7 +158,7 @@ class ClientChat(slixmpp.ClientXMPP):
                     await self.comunicacion_1_1(self.group,'group_chat')
                     await self.get_roster()
 
-                if menu_group == 2:
+                if menu_group == 2: #Leave group
                     self.show_my_groups()
                     if self.validate_group_presence == False:
                         print("No tienes grupos")
@@ -164,7 +173,7 @@ class ClientChat(slixmpp.ClientXMPP):
                         self.validate_group_presence = False
                         await self.get_roster()
 
-            if option ==6: #Enviar presencia
+            if option ==6: #Send presence message
                 print("Ingresa tu status (Available, Away, Not Available , Busy): ")
                 status = await ainput()
                 if status not in status_user.keys():
@@ -177,11 +186,11 @@ class ClientChat(slixmpp.ClientXMPP):
                 self.send_presence(pshow=status, pstatus=mensaje)
                 await self.get_roster()
 
-            if option == 7:
+            if option == 7: #Delete account
                 self.TERMINATE_USER = 2
                 self.disconnect()
 
-            elif option == 8:
+            elif option == 8: #Close session
 
                 self.TERMINATE_USER = 1
                 self.disconnect()
@@ -199,7 +208,7 @@ class ClientChat(slixmpp.ClientXMPP):
         close_chat = True
         while close_chat:
 
-            if type == 'personal_chat':
+            if type == 'personal_chat': #Individual chat
                 print("e para salir\n")
                 m = self.Message()
                 m['to'] = user
@@ -212,7 +221,7 @@ class ClientChat(slixmpp.ClientXMPP):
                 m['type'] = 'chat'
                 m['chat_state'] = 'paused'
                 m.send()
-                if mensaje == "e":
+                if mensaje == "e": #Exit chat
                     m = self.Message()
                     m['to'] = user
                     m['type'] = 'chat'
@@ -232,7 +241,7 @@ class ClientChat(slixmpp.ClientXMPP):
                     m['oob']['url'] = url
                     m.send()
                     await self.get_roster()
-                else:
+                else: #Send message
 
                     self.send_message(mto=user, mbody=mensaje, mtype='chat')
                     m = self.Message()
@@ -241,7 +250,8 @@ class ClientChat(slixmpp.ClientXMPP):
                     m['chat_state'] = 'active'
                     m.send()
                     await self.get_roster()
-            if type == 'group_chat':
+
+            if type == 'group_chat': #Group chat
                 print("e para salir\n")
 
                 mensaje = await ainput(">> ")
@@ -250,7 +260,7 @@ class ClientChat(slixmpp.ClientXMPP):
                 m['type'] = 'groupchat'
                 m['chat_state'] = 'paused'
                 m.send()
-                if mensaje == "e":
+                if mensaje == "e": #Exit chat
 
                     close_chat = False
                 elif mensaje=="file":
@@ -266,7 +276,7 @@ class ClientChat(slixmpp.ClientXMPP):
                     m['oob']['url'] = url
                     m.send()
                     await self.get_roster()
-                else:
+                else: #Send message
                     self.send_message(mto=user, mbody=mensaje, mtype='groupchat')
 
                     await self.get_roster()
@@ -286,11 +296,6 @@ class ClientChat(slixmpp.ClientXMPP):
                     self.validate_group_presence= True
                     if username != self.jid:
                         print("Grupo: " + username)
-                        '''get_presence = self.client_roster.presence(username)
-                        for res, pres in get_presence.items():
-                            print("Estado: " + pres['show'])
-                            print("Mensaje: " + pres['status'])
-                            print("\n")'''
 
     '''
     Function to show the contact list of the user including individual contacts and groups
@@ -299,7 +304,7 @@ class ClientChat(slixmpp.ClientXMPP):
         selection: option to select display all list or details of a contact
     '''
     async def mostrar_usuarios(self,selection):
-        if selection == 1:
+        if selection == 1: #Show all contact list
             print("---------Lista de usuarios---------\n")
             list_users = self.client_roster.groups()
             for user in list_users:
@@ -332,15 +337,14 @@ class ClientChat(slixmpp.ClientXMPP):
                                         print("Mensaje: " + pres['status'])
                                     print("\n")
 
-        if selection == 2:
+        if selection == 2: #Show details of a contact
             list_users = self.client_roster.groups()
 
             print("---------Informacion de contacto---------\n")
             print("Ingresa el usuario a consultar (no es necesario agregar @alumchat.fun)")
             user = input()
             user = user+"@alumchat.fun"
-            #vcard = await self.plugin['xep_0054'].get_vcard(jid = user)
-            #print(vcard)
+
             try:
                 for username in list_users:
                     if user in list_users[username]:
