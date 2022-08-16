@@ -76,8 +76,7 @@ For run the project you need to have Python 3 in your PC and a XMPP server to ma
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-
-
+[Watch demo](https://youtu.be/cPfKyyeYkgA)
 
 
 <!-- FEATURES -->
