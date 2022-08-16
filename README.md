@@ -25,9 +25,11 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+![Screenshot](/screenshots/session.png)
+![Screenshot](/screenshots/chat.png)
+![Screenshot](/screenshots/options.png)
 
-This project is an chat application using the XMPP protocol for the communication. It is a project for the Networks class in the UVG (Universidad del Valle de Guatemala)
+<br>This project is an chat application using the XMPP protocol for the communication. It is a project for the Networks class in the UVG (Universidad del Valle de Guatemala)
 
 ### Goals
 
