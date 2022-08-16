@@ -210,7 +210,7 @@ class ClientChat(slixmpp.ClientXMPP):
         while close_chat:
 
             if type == 'personal_chat': #Individual chat
-                print("e para salir\n")
+                print("e para salir o file para archivos\n")
                 m = self.Message()
                 m['to'] = user
                 m['type'] = 'chat'
@@ -230,7 +230,8 @@ class ClientChat(slixmpp.ClientXMPP):
                     m.send()
                     close_chat = False
                 elif mensaje=="file":
-                    print("Ingresa el nombre del archivo")
+                    print("No se puede enviar archivos \n")
+                    '''print("Ingresa el nombre del archivo")
                     filename = input()
                     url = await self.plugin['xep_0363'].upload_file(filename,domain='alumchat.fun')
                     await self.get_roster()
@@ -240,7 +241,7 @@ class ClientChat(slixmpp.ClientXMPP):
                     m['type'] = 'chat'
                     m['body'] = 'Tried sending an image using OOB'
                     m['oob']['url'] = url
-                    m.send()
+                    m.send()'''
                     await self.get_roster()
                 else: #Send message
 
@@ -253,7 +254,7 @@ class ClientChat(slixmpp.ClientXMPP):
                     await self.get_roster()
 
             if type == 'group_chat': #Group chat
-                print("e para salir\n")
+                print("e para salir o file para archivos\n")
 
                 mensaje = await ainput(">> ")
                 m = self.Message()
@@ -265,7 +266,8 @@ class ClientChat(slixmpp.ClientXMPP):
 
                     close_chat = False
                 elif mensaje=="file":
-                    print("Ingresa el nombre del archivo")
+                    print("No se puede enviar archivos \n")
+                    '''print("Ingresa el nombre del archivo")
                     filename = input()
                     url = await self.plugin['xep_0363'].upload_file(filename,domain='alumchat.fun')
                     await self.get_roster()
@@ -275,7 +277,7 @@ class ClientChat(slixmpp.ClientXMPP):
                     m['type'] = 'groupchat'
                     m['body'] = 'Tried sending an image using OOB'
                     m['oob']['url'] = url
-                    m.send()
+                    m.send()'''
                     await self.get_roster()
                 else: #Send message
                     self.send_message(mto=user, mbody=mensaje, mtype='groupchat')
